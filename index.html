@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🎟 Розыгрыш</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Фоновые элементы -->
+        <div class="bg-gradient"></div>
+        <div class="bg-particles" id="particles"></div>
+        
+        <!-- Основной контент -->
+        <main class="main-content">
+            <!-- Заголовок -->
+            <header class="header">
+                <div class="logo-container">
+                    <div class="logo-glow"></div>
+                    <span class="logo-emoji">🎰</span>
+                </div>
+                <h1 class="title" id="raffle-title">Загрузка...</h1>
+                <p class="subtitle" id="raffle-description"></p>
+            </header>
+
+            <!-- Карточка розыгрыша -->
+            <section class="raffle-card">
+                <!-- Приз -->
+                <div class="prize-section" id="prize-section" style="display: none;">
+                    <div class="prize-icon">🏆</div>
+                    <div class="prize-text" id="prize-text"></div>
+                </div>
+
+                <!-- Таймер -->
+                <div class="timer-section">
+                    <div class="timer-label">До окончания розыгрыша</div>
+                    <div class="timer" id="timer">
+                        <div class="timer-block">
+                            <span class="timer-value" id="days">00</span>
+                            <span class="timer-unit">дней</span>
+                        </div>
+                        <div class="timer-separator">:</div>
+                        <div class="timer-block">
+                            <span class="timer-value" id="hours">00</span>
+                            <span class="timer-unit">часов</span>
+                        </div>
+                        <div class="timer-separator">:</div>
+                        <div class="timer-block">
+                            <span class="timer-value" id="minutes">00</span>
+                            <span class="timer-unit">минут</span>
+                        </div>
+                        <div class="timer-separator">:</div>
+                        <div class="timer-block">
+                            <span class="timer-value" id="seconds">00</span>
+                            <span class="timer-unit">секунд</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Статистика билетов -->
+                <div class="stats-section">
+                    <div class="stat-item">
+                        <div class="stat-icon">🎟</div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="available-tickets">-</span>
+                            <span class="stat-label">осталось</span>
+                        </div>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="sold-tickets">-</span>
+                            <span class="stat-label">продано</span>
+                        </div>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <div class="stat-icon">👑</div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="winners-count">-</span>
+                            <span class="stat-label">победителей</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Прогресс бар -->
+                <div class="progress-section">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                        <div class="progress-glow"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span id="progress-percent">0%</span> билетов продано
+                    </div>
+                </div>
+            </section>
+
+            <!-- Выбор билетов -->
+            <section class="tickets-section">
+                <h2 class="section-title">Выберите билеты</h2>
+                <div class="tickets-grid" id="tickets-grid">
+                    <!-- Кнопки генерируются JS -->
+                </div>
+            </section>
+
+            <!-- Мои билеты -->
+            <section class="my-tickets-section" id="my-tickets-section" style="display: none;">
+                <h2 class="section-title">🎫 Мои билеты</h2>
+                <div class="my-tickets-list" id="my-tickets-list">
+                    <!-- Номера билетов -->
+                </div>
+            </section>
+        </main>
+
+        <!-- Кнопка покупки -->
+        <footer class="footer">
+            <button class="buy-button" id="buy-button" disabled>
+                <span class="buy-button-text">Купить билет</span>
+                <span class="buy-button-price" id="buy-price">- ₽</span>
+            </button>
+        </footer>
+
+        <!-- Модальное окно успеха -->
+        <div class="modal" id="success-modal">
+            <div class="modal-content success-modal">
+                <div class="modal-icon">🎉</div>
+                <h2 class="modal-title">Билеты куплены!</h2>
+                <p class="modal-text" id="success-text">Ваши номера билетов: #1, #2, #3</p>
+                <button class="modal-button" onclick="closeModal()">Отлично!</button>
+            </div>
+        </div>
+
+        <!-- Модальное окно ошибки -->
+        <div class="modal" id="error-modal">
+            <div class="modal-content error-modal">
+                <div class="modal-icon">😔</div>
+                <h2 class="modal-title">Ошибка</h2>
+                <p class="modal-text" id="error-text">Что-то пошло не так</p>
+                <button class="modal-button" onclick="closeModal()">Понятно</button>
+            </div>
+        </div>
+
+        <!-- Загрузка -->
+        <div class="loading-overlay" id="loading">
+            <div class="loading-spinner"></div>
+            <p class="loading-text">Загрузка...</p>
+        </div>
+
+        <!-- Нет розыгрыша -->
+        <div class="no-raffle-overlay" id="no-raffle" style="display: none;">
+            <div class="no-raffle-content">
+                <div class="no-raffle-icon">😔</div>
+                <h2 class="no-raffle-title">Нет активных розыгрышей</h2>
+                <p class="no-raffle-text">Следите за обновлениями!</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
